@@ -40,7 +40,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		log.Printf("copied %s\n", path)
+		log.Printf("copied %s to %s\n", r.URI(path), w.URI(path))
 	}
 
 }

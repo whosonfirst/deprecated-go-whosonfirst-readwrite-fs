@@ -24,18 +24,18 @@ func NewFSWriter(root string) (wof_writer.Writer, error) {
 		return nil, errors.New("Target is not a directory")
 	}
 
-	wr := FSWriter{
+	w := FSWriter{
 		root:      root,
 		dir_mode:  0755,
 		file_mode: 0644,
 	}
 
-	return &wr, nil
+	return &w, nil
 }
 
-func (wr *FSWriter) Write(path string, fh io.ReadCloser) error {
+func (w *FSWriter) Write(path string, fh io.ReadCloser) error {
 
-	abs_path := filepath.Join(wr.root, path)
+	abs_path := w.URI(path)
 
 	abs_root := filepath.Dir(abs_path)
 
@@ -43,14 +43,14 @@ func (wr *FSWriter) Write(path string, fh io.ReadCloser) error {
 
 	if os.IsNotExist(err) {
 
-		err = os.MkdirAll(abs_root, wr.dir_mode)
+		err = os.MkdirAll(abs_root, w.dir_mode)
 
 		if err != nil {
 			return err
 		}
 	}
 
-	out, err := atomicfile.New(abs_path, wr.file_mode)
+	out, err := atomicfile.New(abs_path, w.file_mode)
 
 	if err != nil {
 		return err
@@ -64,4 +64,8 @@ func (wr *FSWriter) Write(path string, fh io.ReadCloser) error {
 	}
 
 	return out.Close()
+}
+
+func (w *FSWriter) URI(path string) string {
+	return filepath.Join(w.root, path)
 }

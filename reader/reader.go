@@ -25,22 +25,26 @@ func NewFSReader(root string) (wof_reader.Reader, error) {
 		return nil, errors.New("root is not a directory")
 	}
 
-	s := FSReader{
+	r := FSReader{
 		root: root,
 	}
 
-	return &s, nil
+	return &r, nil
 }
 
-func (s *FSReader) Read(uri string) (io.ReadCloser, error) {
+func (r *FSReader) Read(path string) (io.ReadCloser, error) {
 
-	path := filepath.Join(s.root, uri)
+	abs_path := r.URI(path)
 
-	_, err := os.Stat(path)
+	_, err := os.Stat(abs_path)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return os.Open(path)
+	return os.Open(abs_path)
+}
+
+func (r *FSReader) URI(path string) string {
+	return filepath.Join(r.root, path)
 }
